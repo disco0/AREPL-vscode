@@ -2,7 +2,7 @@
   "name": "arepl",
   "displayName": "AREPL for python",
   "description": "real-time python scratchpad",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "publisher": "almenon",
   "engines": {
     "vscode": "^1.23.0"
@@ -42,7 +42,7 @@
         },
         "AREPL.inlineResults": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "whether to show errors / results / prints inline. (Currently just error icons)"
         },
         "AREPL.pyGuiLibraries": {
@@ -199,7 +199,7 @@
     "vscode": "^1.1.21"
   },
   "dependencies": {
-    "arepl-backend": "^1.0.5",
+    "arepl-backend": "^1.0.6",
     "opn": "^5.3.0",
     "path": "^0.12.7",
     "vscode-extension-telemetry": "0.0.18"
