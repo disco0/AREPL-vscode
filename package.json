@@ -79,6 +79,19 @@
           "default": "afterDelay",
           "description": "afterDelay: execute python after delay. onSave: when saving the document. onKeybinding: on whatever keys you have bound to executeAREPL."
         },
+        "AREPL.showWhenToExecute": {
+          "type": "string",
+          "enum": [
+            "nextToExecutionTime",
+            "hidden"
+          ],
+          "enumDescriptions": [
+            "display whenToExecute setting next to script evaluation time",
+            "don't draw whenToExecute setting in AREPL window"
+          ],
+          "default": "nextToExecutionTime",
+          "description": "Location to display current setting for AREPL.whenToExecute"
+        },
         "AREPL.show_to_level": {
           "type": "number",
           "default": 2,

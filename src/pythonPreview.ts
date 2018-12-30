@@ -9,7 +9,7 @@ import Utilities from "./utilities"
  * https://code.visualstudio.com/docs/extensions/webview
  */
 export default class PythonPreview{
-    
+
     static readonly scheme = "pythonPreview"
     static readonly PREVIEW_URI = PythonPreview.scheme + "://authority/preview"
     public throttledUpdate: () => void
@@ -19,11 +19,11 @@ export default class PythonPreview{
     private lastTime: number = 999999999;
 
     private html;
-    
+
     private readonly landingPage = `
     <br>
     <p style="font-size:14px">Start typing or make a change and your code will be evaluated.</p>
-    
+
     <p style="font-size:14px">⚠ <b style="color:red">WARNING:</b> code is evaluated WHILE YOU TYPE - don't try deleting files/folders! ⚠</p>
     <p>evaluation while you type can be turned off or adjusted in the settings</p>
     <br>
@@ -38,9 +38,9 @@ export default class PythonPreview{
     <li>Added optional inline error icons - this can be turned on by setting inlineResults setting to true</li>
     </ul>
     <br>
-    
+
     <h3>Examples</h3>
-    
+
     <h4>Simple List</h4>
     <code style="white-space:pre-wrap">
     x = [1,2,3]
@@ -50,14 +50,14 @@ export default class PythonPreview{
 
     <h4>Dumping</h4>
     <code style="white-space:pre-wrap">
-    from arepldump import dump 
+    from arepldump import dump
 
     def milesToKilometers(miles):
         kilometers = miles*1.60934
         dump() # dumps all the vars in your function
 
         # or dump when function is called for a second time
-        dump(None,1) 
+        dump(None,1)
 
     milesToKilometers(2*2)
     milesToKilometers(3*3)
@@ -69,32 +69,32 @@ export default class PythonPreview{
     dump(a) # dump specific vars at any point in your program
     a=2
     </code>
-    
+
     <h4>Turtle</h4>
     <code style="white-space:pre-wrap">
     import turtle
-    
+
     # window in right hand side of screen
     turtle.setup(500,500,-1,0)
-    
+
     turtle.forward(100)
     turtle.left(90)
     </code>
-    
+
     <h4>Web call</h4>
     <code style="white-space:pre-wrap">
     import requests
     import datetime as dt
-    
+
     r = requests.get("https://api.github.com")
-    
+
     #$save
     # #$save saves state so request is not re-executed when modifying below
-    
+
     now = dt.datetime.now()
     if r.status_code == 200:
         print("API up at " + str(now))
-    
+
     </code>`;
     private readonly footer = `<br><br>
         <div id="footer">
@@ -152,7 +152,7 @@ export default class PythonPreview{
             window.onload = function(){
                 ${userVarsCode}
                 let jsonRenderer = renderjson.set_icons('+', '-') // default icons look a bit wierd, overriding
-                    .set_show_to_level(${this.settings.get("show_to_level")}) 
+                    .set_show_to_level(${this.settings.get("show_to_level")})
                     .set_max_string_length(${this.settings.get("max_string_length")});
                 document.getElementById("results").appendChild(jsonRenderer(userVars));
             }
@@ -163,13 +163,30 @@ export default class PythonPreview{
         let color: "green"|"red";
 
         time = Math.floor(time) // we dont care about anything smaller than ms
-        
+
         if(time > this.lastTime) color = "red"
         else color = "green"
 
         this.lastTime = time;
 
-        this.timeContainer = `<p style="position:fixed;left:90%;top:90%;color:${color};">${time} ms</p>`;
+        /**
+         * Moved exec time log/info into new element w/ background and float
+         * Add current configured execution timing to view with setting:
+         *   AREPL.showWhenToExecute: "nextToExecutionTime"
+         * TODO: Border color is --vscode-editor-background, use --vscode-panel-border?
+         * TODO: Initial position idea, somewhere else might be better
+         * TODO: Move lower/more out of way? (Want to add to footer as well)
+         * TODO: Add configured keybinding for AREPL evaluation "onKeybinding" set
+         */
+        this.timeContainer = `<div style="position:fixed;top:90%;width:97%;overflow:hidden;">
+        <p style="float:right;background-color:var(--vscode-editor-background);color:${color};padding:.3em .6em .4em;border:1px solid var(--vscode-editor-background);">
+            <span>
+                ${ this.settings.get("showWhenToExecute") == "nextToExecutionTime" ?
+                    '<span style=color:var(--vscode-editor-foreground);">Exec: ' + this.settings.get("whenToExecute") + ' | </span>' : "" }
+                ${time} ms
+            </span>
+        </p>
+        </div>`
     }
 
     /**
@@ -257,8 +274,8 @@ export default class PythonPreview{
         </head>
         <body>
             ${this.errorContainer}
-            ${printPlacement == "bottom" ? 
-                '<div id="results"></div>' + this.printContainer : 
+            ${printPlacement == "bottom" ?
+                '<div id="results"></div>' + this.printContainer :
                 this.printContainer + '<div id="results"></div>'}
             ${this.timeContainer}
             ${showFooter ? this.footer : ""}
